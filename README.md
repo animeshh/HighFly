@@ -1,3 +1,15 @@
+Instructions:
+-------------
+1. Run MySQL and create a database with name "highfly_db"
+2. Go inside HighFly directory using terminal
+3. Run command >> flask\Script\python create_db.py
+4. Run command >> flask\Script\python run.py
+5. In browser go to http://localhost:5000/
+
+That's all.
+
+Following packages are already there.
+
 If you are on Linux, OS X or Cygwin, install flask and extensions by entering the following commands, one after another:
 flask/bin/pip install flask==0.9
 flask/bin/pip install flask-login
