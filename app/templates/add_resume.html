@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block extra_css %}
+
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/chosen.css') }}" />
+  <style type="text/css" media="all">
+    /* fix rtl for demo */
+    .chzn-rtl .chzn-search { left: -9000px; }
+    .chzn-rtl .chzn-drop { left: -9000px; }
+    </style>
+{% endblock %}
+{% block content %}
+<form action="{{ url_for('add_resume') }}" method="post" id="myForm">
+	<div class="form-group">
+	    <label for="titleText">Title</label>
+	    <input id="titleText" type="text" class="form-control" placeholder="Enter Title" name="title" value="">
+  	</div>
+  	<div class="form-group">
+	    <label for="firstNameText">First Name</label>
+	    <input id="firstNameText" type="text" class="form-control" placeholder="Enter First Name" name="firstName" value="">
+  	</div>
+  	<div class="form-group">
+	    <label for="lastNameText">Last Name</label>
+	    <input id="lastNameText" type="text" class="form-control" placeholder="Enter Last Name" name="lastName" value="">
+  	</div>
+  	<div class="form-group">
+	    <label for="emailText">Email Address</label>
+	    <input id="emailText" type="email" class="form-control" placeholder="Enter Email Address" name="email" value="">
+  	</div>
+  	<div class="form-group">
+	    <label for="testSelect">Skills:</label><br>
+	    <select class="chzn-select form-control" id="testSelect" name="test[]" data-placeholder="Choose a Skill..."  multiple style="width:350px;">
+		
+		</select>
+  	</div>
+
+	<input type="hidden" name="skill_json">
+	
+	
+	
+	<button type="submit" class="btn btn-default">Submit</button>
+</form>
+{% endblock %}
+{% block extra_js %}
+  <script src="{{ url_for('static',filename='js/chosen.jquery.js') }}" type="text/javascript"></script>
+  <script type="text/javascript"> 
+    var config = {
+      '.chzn-select'           : {},
+      '.chzn-select-deselect'  : {allow_single_deselect:true},
+      '.chzn-select-no-single' : {disable_search_threshold:10},
+      '.chzn-select-no-results': {no_results_text:'Oops, nothing found!'},
+      '.chzn-select-width'     : {width:"95%"}
+    }
+    for (var selector in config) {
+      $(selector).chosen(config[selector]);
+    }
+    var v=
+      [
+        {
+          skill:{name:"HTML"}
+        },
+        {
+          skill:{name:"CSS"}
+        },
+        {
+          skill:{name:"PHP"}
+        },
+        {
+          skill:{name:"JavaScript"}
+        },
+        {
+          skill:{name:"MySQL"}
+        },
+        {
+          skill:{name:"Android Development"}
+        },
+        {
+          skill:{name:"Google API"}
+        },
+        {
+          skill:{name:"Google Maps"}
+        },
+        {
+          skill:{name:"Programming"}
+        },
+        {
+          skill:{name:"CodeIgniter"}
+        }
+      ]
+    ;
+    
+    updateMultiSelect('#testSelect',v);
+    function updateMultiSelect(controlId, options)
+      {
+            
+            $(controlId).html('');
+            var testOptions=options;
+            
+            for(var i=0;i<testOptions.length;i++)
+            {
+                  var testStr;
+                  testStr="<option value='"+testOptions[i].skill.name+"'";
+                  
+                  
+                  testStr+=">"+testOptions[i].skill.name+"</option>";
+                  
+                  $(controlId).append(testStr);
+            }
+            $(controlId).trigger("liszt:updated");
+
+            console.log(testOptions);
+            
+      }
+      //for check if the value is in the selected option array
+      
+      $(document).ready(function(){
+      	  $("#myForm").submit(function(){
+      	  	var items = [];
+      	  	var i=0;
+			$('#testSelect option:selected').each(function(){ 
+				var item={
+					skill:{
+						name:$(this).val()
+					}
+				};
+				
+				// item.skill.name=$(this).val();
+				items.push(item); 
+				i++;
+			});
+			var result={
+				skills:{
+					_total:i,
+					values:items	
+				},
+				firstName:$('input[name=firstName]').val(),
+				lastName:[$('input[name=lastName]').val()],
+				emailAddress:$('input[name=email]').val()
+				
+			}
+			// var result = items;
+			console.log(JSON.stringify(result));
+			$("input[name=skill_json]").val(JSON.stringify(result));
+      	  	return true;
+      	  });
+      });
+  </script>
+{% endblock %}

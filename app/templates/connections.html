@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+<div class="row row-centered">
+<script>
+var json={{cat_conn|tojson|safe}};
+</script>
+<div class="col-xs-6 col-centered">
+<div class="content">
+	<select id="cat_list" onchange="populateConn();">
+	{% for keys in cat_conn.keys() %}
+		<option value="{{keys}}">{{keys}}</option>
+	{% endfor %}
+	</select>
+	<script type="text/javascript" >
+		//var json={{cat_json}};
+		
+		function populateConn()
+		{
+			var myselect = document.getElementById("cat_list");
+			var selected = myselect.options[myselect.selectedIndex].value;
+			var str='<table class="table table-hover"><tr><td>Id</td><td>Name</td><td>Profession</td></tr>';
+			for(var i=0;i<json[selected].length;i++)
+			{
+				str+="<tr><td>"+(i+1)+"</td><td>"+json[selected][i][0]+"</td><td>"+json[selected][i][2]+"</td></tr>";
+			}
+			str+="</table>";
+			$("#conn_container").html(str);
+			
+		}
+	</script>
+	<div id="conn_container" class="content">
+	</div>
+	</div>
+</div>
+
+<div class="col-xs-6 col-centered">
+<div id="chartContainer" class="content">
+  
+  <script type="text/javascript" src="{{ url_for('static',filename='js/d3.v3.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='js/dimple.v2.1.0.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='js/crossfilter.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='js/dc.js') }}"></script>
+  
+  <script type="text/javascript">
+		//Width and height
+			var w = 400;
+			var h = 400;
+
+			var dataset = [];
+			{% for keys,values in cat_count.items() %}
+    			dataset.push({{values}});
+    			//{{keys}}
+			{% endfor %}
+			
+			
+			//var dataset = [ 5, 10, 20, 45, 6, 25 ];
+
+			var outerRadius = w / 2;
+			var innerRadius = w / 3;
+			var arc = d3.svg.arc()
+							.innerRadius(innerRadius)
+							.outerRadius(outerRadius);
+			
+			var pie = d3.layout.pie();
+			
+			//Easy colors accessible via a 10-step ordinal scale
+			var color = d3.scale.category20c();
+
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+			
+			//Set up groups
+			var arcs = svg.selectAll("g.arc")
+						  .data(pie(dataset))
+						  .enter()
+						  .append("g")
+						  .attr("class", "arc")
+						  .attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
+			
+			//Draw arc paths
+			arcs.append("path")
+			    .attr("fill", function(d, i) {
+			    	return color(i);
+			    })
+			    .attr("d", arc);
+			
+			//Labels
+			arcs.append("text")
+			    .attr("transform", function(d) {
+			    	return "translate(" + arc.centroid(d) + ")";
+			    })
+			    .attr("text-anchor", "middle")
+			    .text(function(d) {
+			    	return d.value;
+			    });
+						
+  </script>
+
+</div>
+</div>
+</div>
+</div>
+{% endblock %}

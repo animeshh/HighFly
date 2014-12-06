@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id="chartContainer">
+  
+  <script type="text/javascript" src="{{ url_for('static',filename='js/d3.v3.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='js/dimple.v2.1.0.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='js/crossfilter.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='js/dc.js') }}"></script>
+  
+  <script type="text/javascript">
+		//Width and height
+			var w = 400;
+			var h = 400;
+
+			var dataset = [];
+			{% for keys,values in cat_count.items() %}
+    			dataset.push({{values}});
+    			//{{keys}}
+			{% endfor %}
+			
+			
+			//var dataset = [ 5, 10, 20, 45, 6, 25 ];
+
+			var outerRadius = w / 2;
+			var innerRadius = w / 3;
+			var arc = d3.svg.arc()
+							.innerRadius(innerRadius)
+							.outerRadius(outerRadius);
+			
+			var pie = d3.layout.pie();
+			
+			//Easy colors accessible via a 10-step ordinal scale
+			var color = d3.scale.category20c();
+
+			//Create SVG element
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+			
+			//Set up groups
+			var arcs = svg.selectAll("g.arc")
+						  .data(pie(dataset))
+						  .enter()
+						  .append("g")
+						  .attr("class", "arc")
+						  .attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
+			
+			//Draw arc paths
+			arcs.append("path")
+			    .attr("fill", function(d, i) {
+			    	return color(i);
+			    })
+			    .attr("d", arc);
+			
+			//Labels
+			arcs.append("text")
+			    .attr("transform", function(d) {
+			    	return "translate(" + arc.centroid(d) + ")";
+			    })
+			    .attr("text-anchor", "middle")
+			    .text(function(d) {
+			    	return d.value;
+			    });
+						
+  </script>
+
+</div>
+
+<div class="row">
+	<div class="col-md-4">
+		<h3> Search Results from skill: {{all_jobs[0][0]}}</h3>
+		<table class="table table-hover">
+			<thead>
+				<tr><td>Date</td><td>Job Title</td><td>Company</td><td>Location</td></tr>
+			</thead>
+			<tbody>
+				{% for job in all_jobs[0][1] %}
+				<tr>
+				<td>{{ job[4] }}</td>
+				<td><a href="{{job[0]}}">{{job[1]}}</a></td>
+				<td>{{ job[2] }}</td>
+				<td>{{ job[3] }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<div class="col-md-4">
+		<h3> Search Results from skill: {{all_jobs[1][0]}}</h3>
+		<table class="table table-hover">
+			<thead>
+				<tr><td>Date</td><td>Job Title</td><td>Company</td><td>Location</td></tr>
+			</thead>
+			<tbody>
+				{% for job in all_jobs[1][1] %}
+				<tr>
+				<td>{{ job[4] }}</td>
+				<td><a href="{{job[0]}}">{{job[1]}}</a></td>
+				<td>{{ job[2] }}</td>
+				<td>{{ job[3] }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	
+</div>
+
+<div id="graphContainer">
+  
+  <script type="text/javascript" src="{{ url_for('static',filename='js/d3.v3.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='js/dimple.v2.1.0.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='js/crossfilter.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static',filename='js/dc.js') }}"></script>
+  
+  <script type="text/javascript">
+		var dataset = {
+        nodes: [
+                { name: "Adam" },
+                { name: "Bob" },
+                { name: "Carrie" },
+                { name: "Donovan" },
+                { name: "Edward" },
+                { name: "Felicity" },
+                { name: "George" },
+                { name: "Hannah" },
+                { name: "Iris" },
+                { name: "Jerry" }
+        ],
+        edges: [
+                { source: 0, target: 1 },
+                { source: 0, target: 2 },
+                { source: 0, target: 3 },
+                { source: 0, target: 4 },
+                { source: 1, target: 5 },
+                { source: 2, target: 5 },
+                { source: 2, target: 5 },
+                { source: 3, target: 4 },
+                { source: 5, target: 8 },
+                { source: 5, target: 9 },
+                { source: 6, target: 7 },
+                { source: 7, target: 8 },
+                { source: 8, target: 9 }
+        ]		
+	};
+	
+	var force = d3.layout.force()
+                     .nodes(dataset.nodes)
+                     .links(dataset.edges)
+                     .size([w, h])
+                     .start();
+					 
+	var force = d3.layout.force()
+                     .nodes(dataset.nodes)
+                     .links(dataset.edges)
+                     .size([w, h])
+                     .linkDistance([50])        // <-- New!
+                     .charge([-100])            // <-- New!
+                     .start();
+					 
+	var edges = svg.selectAll("line")
+        .data(dataset.edges)
+        .enter()
+        .append("line")
+        .style("stroke", "#ccc")
+        .style("stroke-width", 1);
+		
+	var nodes = svg.selectAll("circle")
+        .data(dataset.nodes)
+        .enter()
+        .append("circle")
+        .attr("r", 10)
+        .style("fill", function(d, i) {
+                return colors(i);
+        })
+        .call(force.drag);
+		
+	force.on("tick", function() {
+
+	edges.attr("x1", function(d) { return d.source.x; })
+     .attr("y1", function(d) { return d.source.y; })
+     .attr("x2", function(d) { return d.target.x; })
+     .attr("y2", function(d) { return d.target.y; });
+
+	nodes.attr("cx", function(d) { return d.x; })
+		.attr("cy", function(d) { return d.y; });
+
+});
+  </script>
+
+</div>
+
+{% endblock %}

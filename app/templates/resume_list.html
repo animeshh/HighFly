@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<a href="{{ url_for('add_resume') }}" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add Resume</a>
+<div></div>
+<table class="table table-hover">
+ 	<thead>
+ 		<tr><td>Title</td><td>Edit</td><td>Delete</td></tr>
+ 	</thead>
+ 	<tbody>
+	{% for resume in resumes %}
+	<tr>
+	<td>{{ resume.title }}</td>
+	<td><a href="{{ url_for('editResume',resume_id= resume.id )}}">Edit</a></td>
+	<td><a href="">Delete</a></td>
+	</tr>
+	{% endfor %}
+	</tbody>
+</table>
+{% endblock %}

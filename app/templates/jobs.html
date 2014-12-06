@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+	<script type="text/javascript"
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYmLKCiN-j7__PW5i9gUemwpF1H5sxu9Y&sensor=false">
+    </script>
+	<div id="map-canvas" style="height:400px; width:600px;"></div>
+	
+		<script>
+			function initialise() { 
+				var geocoder=new google.maps.Geocoder();
+				//var locations = {{all_jobs}};
+				//var locations = {{all_jobs}};
+				// var locations = [];
+				var total_jobs=[];
+				var jobs=[];
+				{% for job in all_jobs[0][1] %}
+					
+					
+					var j={
+						url:'{{job[0]}}',
+						title:'{{job[1]}}',
+						company:'{{job[2]}}',
+						date:'{{job[4]}}',
+						location:'{{job[3]}}'
+						
+					};
+					jobs.push(j);
+					//{{keys}}
+				{% endfor %}
+				total_jobs.push(jobs);
+				jobs=[];
+				{% for job in all_jobs[1][1] %}
+					
+					
+					var j={
+						url:'{{job[0]}}',
+						title:'{{job[1]}}',
+						company:'{{job[2]}}',
+						date:'{{job[4]}}',
+						location:'{{job[3]}}'
+						
+					};
+					jobs.push(j);
+					//{{keys}}
+				{% endfor %}
+				total_jobs.push(jobs);
+				
+				console.log(jobs);
+				
+				
+				var myLatlng = new google.maps.LatLng(53.068165,-4.076803); // Add the coordinates
+				var mapOptions = {
+					zoom: 6, // The initial zoom level when your map loads (0-20)
+					center: myLatlng, // Centre the Map to our coordinates variable
+					mapTypeId: google.maps.MapTypeId.ROADMAP, // Set the type of Map
+				}
+				var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions); // Render our map within the empty div    
+				var image = new google.maps.MarkerImage("http://www.creare.co.uk/wp-content/uploads/2013/08/marker.png", null, null, null, new google.maps.Size(40,52)); // Create a variable for our marker image.
+				var markers_test=[];
+				var infos=[];
+				var i=0;
+				var info_window = new google.maps.InfoWindow({});
+				for(var i=0;i<total_jobs.length;i++){
+					for(var j=0;j<total_jobs[i].length;j++)
+					{
+						console.log(jobs[i].location);
+						var str="<a href='"+total_jobs[i][j].url+"'>"+total_jobs[i][j].title+"</a><br>By "+total_jobs[i][j].company+"<br>Date: "+total_jobs[i][j].date;
+						var job=jobs[i];
+						geocoder.geocode( { 'address': ""+total_jobs[i][j].location}, function(results, status,job) {
+							if (status == google.maps.GeocoderStatus.OK) {
+								
+								map.setCenter(results[0].geometry.location);
+								var marker = new google.maps.Marker({
+									map: map,
+									position: results[0].geometry.location
+								});
+								
+								 
+								// markers_test[i]=marker;
+								console.log(job);
+								google.maps.event.addListener(marker, 'click', function() {
+									info_window.setContent(str);
+									info_window.open(map,this);
+								});
+								
+							} else {
+								alert('Geocode was not successful for the following reason: ' + status);
+							}
+						});
+					
+					}
+					
+					
+					//console.log(i);
+				}
+				
+				
+				//var marker = new google.maps.Marker({ // Set the marker
+					//position: myLatlng, // Position marker to coordinates
+					//icon:image, //use our image as the marker
+					//map: map, // assign the marker to our map variable
+					//title: 'Click to visit our company on Google Places' // Marker ALT Text
+				//});
+		
+				// 	google.maps.event.addListener(marker, 'click', function() { // Add a Click Listener to our marker 
+				//	window.location='http://www.snowdonrailway.co.uk/shop_and_cafe.php'; // URL to Link Marker to (i.e Google Places Listing)
+				// 	});
+		
+				//var infowindow = new google.maps.InfoWindow({ // Create a new InfoWindow
+					//content:"<h3>Snowdown Summit Cafe</h3><p>Railway Drive-through available.</p>" // HTML contents of the InfoWindow
+				//});
+ 
+				//google.maps.event.addListener(marker, 'click', function() { // Add a Click Listener to our marker
+				//infowindow.open(map,marker); // Open our InfoWindow
+				//});
+		
+				google.maps.event.addDomListener(window, 'resize', function() { map.setCenter(myLatlng); }); // Keeps the Pin Central when resizing the browser on responsive sites
+			}
+			google.maps.event.addDomListener(window, 'load', initialise); // Execute our 'initialise' function once the page has loaded. 
+
+			
+		</script>
+</div>
+<div class="row">
+	<div class="col-md-4">
+		<h3> Search Results from skill: {{all_jobs[0][0]}}</h3>
+		<table class="table table-hover">
+			<thead>
+				<tr><td>Date</td><td>Job Title</td><td>Company</td><td>Location</td></tr>
+			</thead>
+			<tbody>
+				{% for job in all_jobs[0][1] %}
+				<tr>
+				<td>{{ job[4] }}</td>
+				<td><a href="{{job[0]}}">{{job[1]}}</a></td>
+				<td>{{ job[2] }}</td>
+				<td>{{ job[3] }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	<div class="col-md-4">
+		<h3> Search Results from skill: {{all_jobs[1][0]}}</h3>
+		<table class="table table-hover">
+			<thead>
+				<tr><td>Date</td><td>Job Title</td><td>Company</td><td>Location</td></tr>
+			</thead>
+			<tbody>
+				{% for job in all_jobs[1][1] %}
+				<tr>
+				<td>{{ job[4] }}</td>
+				<td><a href="{{job[0]}}">{{job[1]}}</a></td>
+				<td>{{ job[2] }}</td>
+				<td>{{ job[3] }}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	
+</div>
+
+{% endblock %}

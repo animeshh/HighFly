@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block sidebar %}<div class="col-md-4"></div>{% endblock %}
+{% block custom_view %}
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8">
+		<div class="jumbotron">
+		  <h1>HighFly</h1>
+		  <p>Highfly uses techniques of data science and natural language processing to analyze the network and provide insights through visualization.</p>
+		  
+		</div>
+	</div>
+	<div class="col-md-2"></div>
+</div>
+
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-5">
+		<iframe width="480" height="300" src="//www.youtube.com/embed/vFi-QpuZfXs" frameborder="0" allowfullscreen></iframe>
+	</div>
+	<div class="col-md-4">
+		<div class="row">
+			<a href="{{ url_for('login') }} "><img src="{{ url_for('static',filename='img/developer_signin.png') }}"></a>
+		</div>
+		<div style="margin-top:20px;">
+			<ul >
+				<li>Create Your Resume</li>
+				<li>Find Connections</li>
+				<li>Find the jobs that want YOU</li>
+				<li>Get Job Alerts based on profile</li>
+			</ul>
+		</div>
+	</div>
+	<div class="col-md-1"></div>
+</div>
+{% endblock %}
