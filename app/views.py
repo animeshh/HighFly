@@ -215,6 +215,14 @@ def show_jobs():
     return render_template("jobs.html",
         title = 'Jobs', all_jobs=total_job_list, user=user)
 		
+@app.route('/jobs/details', methods=['GET', 'POST'])
+def job_details():
+    if request.method == 'POST':
+        url=title=request.form['url']
+        json_data=request.form["company"]
+
+        return render_template("job_details.html")
+	
 @app.route('/login')
 def login():
     return linkedin.authorize(callback=url_for('authorized', _external=True))

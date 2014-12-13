@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block extra_css %}
+
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/chosen.css') }}" />
+  <style type="text/css" media="all">
+    /* fix rtl for demo */
+    .chzn-rtl .chzn-search { left: -9000px; }
+    .chzn-rtl .chzn-drop { left: -9000px; }
+    </style>
+{% endblock %}
+{% block content %}
+<div>
+	Testing
+</div>
+{% endblock %}
+{% block extra_js %}
+  
+{% endblock %}
