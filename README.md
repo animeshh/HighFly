@@ -4,7 +4,16 @@ Instructions:
 2. Go inside HighFly directory using terminal
 3. Run command >> flask\Script\python create_db.py
 4. Run command >> flask\Script\python run.py
-5. In browser go to http://localhost:5000/
+5. In browser go to http://localhost:5000/login
+
+Features:
+-----------
+1. Creating resume (Need to add some more options)
+2. Fetching connections
+3. Fetching jobs based on skills
+4. Analysing job requirements
+5. Showing concepts and links
+6. Glassdoor reviews
 
 That's all.
 
