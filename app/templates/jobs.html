@@ -133,7 +133,7 @@
 				{% for job in all_jobs[0][1] %}
 				<tr>
 				<td>{{ job[4] }}</td>
-				<td><a href="{{ url_for('job_details',url = job[0], company = job[2])}}">{{job[1]}}</a></td>
+				<td><a href="{{ url_for('job_details',joburl = job[0], company = job[2])}}">{{job[1]}}</a></td>
 				<td>{{ job[2] }}</td>
 				<td>{{ job[3] }}</td>
 				</tr>
@@ -151,7 +151,7 @@
 				{% for job in all_jobs[1][1] %}
 				<tr>
 				<td>{{ job[4] }}</td>
-				<td><a href="{{job[0]}}">{{job[1]}}</a></td>
+				<td><a href="{{ url_for('job_details',joburl = job[0], company = job[2])}}">{{job[1]}}</a></td>
 				<td>{{ job[2] }}</td>
 				<td>{{ job[3] }}</td>
 				</tr>

@@ -1,18 +1,31 @@
 {% extends "base.html" %}
-{% block extra_css %}
-
-  <link rel="stylesheet" href="{{ url_for('static',filename='css/chosen.css') }}" />
-  <style type="text/css" media="all">
-    /* fix rtl for demo */
-    .chzn-rtl .chzn-search { left: -9000px; }
-    .chzn-rtl .chzn-drop { left: -9000px; }
-    </style>
-{% endblock %}
 {% block content %}
+
 <div>
-	Testing
+	<h3>Job Details</h3>
+	<p>{{job_des}}</p>
 </div>
-{% endblock %}
-{% block extra_js %}
-  
+<div>
+</br>
+<h3>Analysis</h3>
+<table class="table table-hover">
+ 	<thead>
+ 		<tr><td>Concept</td><td>Relevance</td><td>Link</td></tr>
+ 	</thead>
+ 	<tbody>
+	{% for concept in concepts %}
+	<tr>
+	<td>{{ concept[0] }}</td>
+	<td>{{ concept[1] }}</a></td>
+	<td><a href="{{ concept[2] }}">{{ concept[2] }}</a></td>
+	</tr>
+	{% endfor %}
+	</tbody>
+</table>
+</div>
+<div class="gdWidget">
+<a href="http://www.glassdoor.com/api/api.htm?version=1&action=employer-combo&t.s=w-m&t.a=c&format=300x400&employerId=9079&activeTab=R" target="_gd">Google Salaries</a> | More details for <a href="http://www.glassdoor.com/api/api.htm?version=1&action=employer-jobs&t.s=w-m&t.a=c&employerId=9079" target="_gd">Google Jobs</a> | <a href="http://www.glassdoor.com/api/api.htm?version=1&action=employer-review&t.s=w-m&t.a=c&employerId=9079" target="_gd">Google Reviews</a> | <a href="http://www.glassdoor.com/api/api.htm?version=1&action=employer-interview&t.s=w-m&t.a=c&employerId=9079" target="_gd">Google Interview Questions & Reviews</a>
+</div>
+<script src="http://www.glassdoor.com/static/js/api/widget/v1.js" type="text/javascript"></script>
+
 {% endblock %}

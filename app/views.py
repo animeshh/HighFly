@@ -6,7 +6,8 @@ import json,urllib,datetime
 import HTMLParser
 from collections import defaultdict
 import urllib2
-
+from xml.dom import minidom
+from glassdoor import get
 
 app.debug = True
 app.secret_key = 'development'
@@ -207,21 +208,51 @@ def show_jobs():
 			jobs_data = json.loads(response)
 			for job in jobs_data['resultItemList']:
 				job_post=(job['detailUrl'], job['jobTitle'], job['company'], job['location'], job['date'])
-				print job_post
 				job_list.append(job_post)
 			main_job_node=(skill_name,job_list)
 			total_job_list.append(main_job_node)
-	print str(total_job_list)
     return render_template("jobs.html",
         title = 'Jobs', all_jobs=total_job_list, user=user)
 		
 @app.route('/jobs/details', methods=['GET', 'POST'])
 def job_details():
-    if request.method == 'POST':
-        url=title=request.form['url']
-        json_data=request.form["company"]
 
-        return render_template("job_details.html")
+	user=User.query.filter_by(id=session['user_id']).first()
+	if request.method == 'GET':
+		url=request.args.get('joburl')
+		company=request.args.get('company')
+		
+		x = get('dropbox')
+		print x
+		
+		
+		job_response = urllib2.urlopen(url).read()
+		p = LinksParser()
+		p.feed(job_response)
+		p.close()
+		url = 'http://access.alchemyapi.com/calls/text/TextGetRankedConcepts'
+		apikey = '6e2ca8f176761b589a9bee72a3ff6ed8703e0706' #your API key goes here
+		params = urllib.urlencode({
+			'apikey': apikey,
+			'text': p.data,
+			'showSourceText': '0', #shows the original text sent to the API
+		})
+			
+		alchemyThis = urllib2.urlopen(url, params).read()
+		xmldoc = minidom.parseString(alchemyThis)
+		nodes = xmldoc.getElementsByTagName('concept')
+		all = list()
+		for node in nodes:
+			textVal = node.getElementsByTagName('text')[0]
+			rel = node.getElementsByTagName('relevance')[0]
+			dbpedia = node.getElementsByTagName('dbpedia')[0]
+			concept = (textVal.childNodes[0].data, rel.childNodes[0].data, dbpedia.childNodes[0].data)
+			all.append(concept)
+			
+		
+		#print job_response
+		
+	return render_template("job_details.html", title = "Job Analysis", job_des = p.data, concepts = all, user=user)
 	
 @app.route('/login')
 def login():
@@ -263,3 +294,31 @@ def change_linkedin_query(uri, headers, body):
     return uri, headers, body
 
 linkedin.pre_request = change_linkedin_query
+
+class LinksParser(HTMLParser.HTMLParser):
+  def __init__(self):
+    HTMLParser.HTMLParser.__init__(self)
+    self.recording = 0
+    self.data = []
+
+  def handle_starttag(self, tag, attributes):
+    if tag != 'div':
+      return
+    if self.recording:
+      self.recording += 1
+      return
+    for name, value in attributes:
+      if name == 'id' and value == 'detailDescription':
+        break
+    else:
+      return
+    self.recording = 1
+
+  def handle_endtag(self, tag):
+    if tag == 'div' and self.recording:
+      self.recording -= 1
+
+  def handle_data(self, data):
+    if self.recording:
+      self.data.append(data)
+	  
