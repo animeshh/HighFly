@@ -36,6 +36,7 @@ pip install flask-babel==0.8
 pip install flup
 pip install Flask-OAuthlib
 pip install Flask-Rauth
+pip install glassdoor 
 
 If you are on Windows the commands are slightly different:
 flask\Scripts\pip install flask==0.9
