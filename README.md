@@ -2,8 +2,8 @@ Instructions:
 -------------
 1. Run MySQL and create a database with name "highfly_db"
 2. Go inside HighFly directory using terminal
-3. Run command >> flask\Script\python create_db.py
-4. Run command >> flask\Script\python run.py
+3. Run command >> python db_create.py
+4. Run command >> python run.py
 5. In browser go to http://localhost:5000/login
 
 Features:
