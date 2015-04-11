@@ -102,7 +102,41 @@ def add_resume():
         title = 'Add Resume',
         user=user)
 
+@app.route('/resume/upload', methods=['GET', 'POST'])
+def upload_resume():
+    if request.method == 'POST':
+        title=title=request.form['title']
+        json_data=request.form["skill_json"]
+        created_time=datetime.datetime.utcnow()
+        edited_time=datetime.datetime.utcnow()
+        user=User.query.filter_by(id=session['user_id']).first()
 
+
+        r=Resume(title=title,json_data=json_data,created_time=created_time,edited_time=edited_time,creator=user)
+        db.session.add(r)
+        db.session.commit()
+        return redirect(url_for('show_resume'))
+    #code added:animesh for auto fill form
+    userdata = {}
+    alldata = pdftoTxt()
+    for index, data in enumerate(alldata):
+        if index ==0:
+            userdata['firstName'] = data
+        if index ==1:
+            userdata['lastName'] = data
+
+    return render_template("upload_resume.html",title = 'Upload Resume',user=userdata)
+    
+def pdftoTxt():
+    import pyPdf
+    from PyPDF2 import PdfFileReader, PdfFileWriter
+    pdf = PdfFileReader(open("animesh_resume.pdf", "rb"))
+    sentences = []
+    #parse pdf into text
+    for page in pdf.pages:
+        sentences.append(page.extractText())
+        #print page.extractText()
+        return sentences
 @app.route('/resume/<int:resume_id>', methods=['GET', 'POST'])
 @app.route('/resume/edit/<int:resume_id>', methods=['GET', 'POST'])
 def editResume(resume_id):
