@@ -116,17 +116,43 @@ def upload_resume():
         db.session.add(r)
         db.session.commit()
         return redirect(url_for('show_resume'))
-    #code added:animesh for auto fill form
-    userdata = {}
+    #Animesh,code added for auto fill form
     alldata = pdftoTxt()
-    for index, data in enumerate(alldata):
-        if index ==0:
-            userdata['firstName'] = data
-        if index ==1:
-            userdata['lastName'] = data
-
+    userdata = dataFilter(alldata[0])
     return render_template("upload_resume.html",title = 'Upload Resume',user=userdata)
+
+def dataFilter(alldata):
+    import re
+    userdata = {}
+    #index = re.match("\bContact\b",alldata,re.IGNORECASE).start()
+    #print index
+    #print alldata
+    data = alldata.split()
+    pattern1 = re.compile("email",re.IGNORECASE) 
+    pattern2 = re.compile("mobile|phone",re.IGNORECASE)
+    pattern3 = re.compile("no|info|:|-",re.IGNORECASE)
+    flag1 = False
+    flag2 = False
+    for index,value in enumerate(data):
+        if pattern1.match(value):
+            if data[index+1]==':' or data[index+1]=='-':
+                userdata['email'] = data[index+2]
+            else:
+                userdata['email'] = data[index+1]
+            flag1 = True
+        if pattern2.match(value):
+            if pattern3.match(data[index+1]):
+                userdata['contact'] = data[index+2]
+            else:
+                userdata['contact'] = data[index+1]
+            flag2 = True
+        if flag1 and flag2:
+            break
+    userdata['firstName'] = data[0]
+    userdata['lastName'] =  data[1]
     
+    return userdata
+
 def pdftoTxt():
     import pyPdf
     from PyPDF2 import PdfFileReader, PdfFileWriter
