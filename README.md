@@ -4,7 +4,7 @@ Instructions:
 2. Go inside HighFly directory using terminal
 3. Run command >> python db_create.py
 4. Run command >> python run.py
-5. In browser go to http://localhost:5000/login
+5. In browser go to http://localhost:5000/pratik
 
 Features:
 -----------
