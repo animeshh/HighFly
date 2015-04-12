@@ -325,6 +325,10 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/pratik')
+def pratik():
+	return render_template('login_page.html')
+
 @app.route('/login/authorized')
 def authorized():
     resp = linkedin.authorized_response()
