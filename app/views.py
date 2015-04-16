@@ -118,8 +118,11 @@ def upload_resume():
         return redirect(url_for('show_resume'))
     #Animesh,code added for auto fill form
     alldata = pdftoTxt()
-    userdata = dataFilter(alldata[0])
-    return render_template("upload_resume.html",title = 'Upload Resume',user=userdata)
+    if alldata[0]:
+        print "alldata: " ,alldata
+        userdata = dataFilter(alldata[0])
+        return render_template("upload_resume.html",title = 'Upload Resume',user=userdata)
+    return redirect(url_for('show_resume'))
 
 def dataFilter(alldata):
     import re
@@ -154,16 +157,18 @@ def dataFilter(alldata):
     return userdata
 
 def pdftoTxt():
-    import pyPdf
+    #import pyPdf
     from PyPDF2 import PdfFileReader, PdfFileWriter
     pdf = PdfFileReader(open("animesh_resume.pdf", "rb"))
     sentences = []
     #parse pdf into text
+    #print pdf
     for page in pdf.pages:
         sentences.append(page.extractText())
-        #print page.extractText()
-        return sentences
-@app.route('/resume/<int:resume_id>', methods=['GET', 'POST'])
+        print page.extractText()
+    #print "jijijjoo: ",sentences
+    return sentences
+
 @app.route('/resume/edit/<int:resume_id>', methods=['GET', 'POST'])
 def editResume(resume_id):
     if request.method == 'POST':
