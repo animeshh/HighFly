@@ -119,7 +119,7 @@ def upload_resume():
     #Animesh,code added for auto fill form
     alldata = pdftoTxt()
     if alldata[0]:
-        print "alldata: " ,alldata
+        #print "alldata: " ,alldata
         userdata = dataFilter(alldata[0])
         return render_template("upload_resume.html",title = 'Upload Resume',user=userdata)
     return redirect(url_for('show_resume'))
@@ -132,8 +132,9 @@ def dataFilter(alldata):
     #print alldata
     data = alldata.split()
     pattern1 = re.compile("email",re.IGNORECASE) 
-    pattern2 = re.compile("mobile|phone",re.IGNORECASE)
-    pattern3 = re.compile("no|info|:|-",re.IGNORECASE)
+    pattern2 = re.compile("mobile|phone|tel|contact",re.IGNORECASE)
+    #pattern3 = re.compile("no|info|:|-",re.IGNORECASE)
+    pattern4 = re.compile("^[0-9]+$")
     flag1 = False
     flag2 = False
     for index,value in enumerate(data):
@@ -144,28 +145,45 @@ def dataFilter(alldata):
                 userdata['email'] = data[index+1]
             flag1 = True
         if pattern2.match(value):
-            if pattern3.match(data[index+1]):
-                userdata['contact'] = data[index+2]
-            else:
-                userdata['contact'] = data[index+1]
+            phoneNo = ""
+            if pattern4.match(data[index+1]):
+                phoneNo += data[index+1]
+            if pattern4.match(data[index+2]):
+                phoneNo += data[index+2]
+            if pattern4.match(data[index+3]):
+                phoneNo += data[index+3]
+            if pattern4.match(data[index+4]):
+                phoneNo += data[index+4]
+            
+            userdata['contact'] = phoneNo
             flag2 = True
         if flag1 and flag2:
             break
+    """start = '.*[ \t]+'
+    end   = '[ \t]+.*'
+    result = re.search('%s(.*)%s' % (start, end), alldata)
+    if result:
+        #print result
+        result = result.group(1)
+        print result
+        userdata['firstName'] = result
+        userdata['lastName'] =  result"""
+    print data[1]
     userdata['firstName'] = data[0]
-    userdata['lastName'] =  data[1]
-    
+    userdata['lastName'] = data[1]
     return userdata
 
 def pdftoTxt():
     #import pyPdf
     from PyPDF2 import PdfFileReader, PdfFileWriter
-    pdf = PdfFileReader(open("animesh_resume.pdf", "rb"))
+    pdf = PdfFileReader(open("Resume.pdf", "rb"))
     sentences = []
     #parse pdf into text
     #print pdf
     for page in pdf.pages:
         sentences.append(page.extractText())
-        print page.extractText()
+        #print page.extractText()+"\n"
+        #break
     #print "jijijjoo: ",sentences
     return sentences
 
