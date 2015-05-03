@@ -279,8 +279,7 @@ def show_jobs():
 	skill_length=len(skill_json['skills']['values'])
 	skill_list=list()
 	total_job_list=list()
-	if skill_length>2 :
-		for x in range(0, 2):
+	for x in range(0, skill_length):
 			skill_name=skill_json['skills']['values'][x]['skill']['name']
 			url = 'http://service.dice.com/api/rest/jobsearch/v1/simple.json?skill='+skill_name
 			response = urllib2.urlopen(url).read()
@@ -293,7 +292,9 @@ def show_jobs():
 				job_post=(job['detailUrl'], job['jobTitle'], job['company'], job['location'], job['date'])
 				job_list.append(job_post)
 			main_job_node=(skill_name,job_list)
+
 			total_job_list.append(main_job_node)
+    print "here: ",total_job_list[2][0]
     return render_template("jobs.html",
         title = 'Jobs', all_jobs=total_job_list, user=user)
 		
@@ -324,8 +325,9 @@ def job_details():
 		alchemyThis = urllib2.urlopen(url, params).read()
 		xmldoc = minidom.parseString(alchemyThis)
 		nodes = xmldoc.getElementsByTagName('concept')
-		all = list()
-		for node in nodes:
+		print "hello  ",p.data
+        all = list()
+        for node in nodes:
 			textVal = node.getElementsByTagName('text')[0]
 			rel = node.getElementsByTagName('relevance')[0]
 			dbpedia = node.getElementsByTagName('dbpedia')[0]
@@ -335,7 +337,7 @@ def job_details():
 		
 		#print job_response
 		
-	return render_template("job_details.html", title = "Job Analysis", job_des = p.data, concepts = all, user=user)
+	return render_template("job-histogram.html", title = "Job Analysis", job_des = p.data, concepts = all, user=user)
 	
 @app.route('/login')
 def login():
